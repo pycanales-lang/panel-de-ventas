@@ -11,30 +11,24 @@ body {
     background: #f4f6f8;
 }
 
-/* ===== HEADER ===== */
 header {
     background: #003366;
     color: white;
     padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
 }
 
 select {
     padding: 6px 10px;
-    font-size: 14px;
     border-radius: 4px;
     border: none;
 }
 
-/* ===== KPIs ===== */
 .kpis {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
-    padding: 15px;
-    background: #ffffff;
+    padding: 12px;
+    background: white;
 }
 
 .kpi {
@@ -42,12 +36,11 @@ select {
     border-radius: 8px;
     padding: 12px;
     text-align: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .kpi h2 {
     margin: 0;
-    font-size: 20px;
+    font-size: 22px;
     color: #003366;
 }
 
@@ -56,11 +49,32 @@ select {
     color: #666;
 }
 
-/* ===== MAPA ===== */
 iframe {
     width: 100%;
-    height: calc(100vh - 190px);
+    height: calc(100vh - 230px);
     border: none;
+}
+
+.ranking {
+    background: white;
+    padding: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 6px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background: #003366;
+    color: white;
 }
 </style>
 </head>
@@ -68,35 +82,37 @@ iframe {
 <body>
 
 <header>
-    📅 Fecha:
-    <select onchange="cambiarFecha(this.value)">
-        <option value="">Seleccionar</option>
-        <option value="2026-01-13">13/01/2026</option>
-        <option value="2026-01-14">14/01/2026</option>
-        <option value="2026-01-15">15/01/2026</option>
-    </select>
+📊 Dashboard Comercial — Fecha:
+<select onchange="cambiarFecha(this.value)">
+    <option value="">Seleccionar</option>
+    <option value="2026-01-13">13/01/2026</option>
+    <option value="2026-01-14">14/01/2026</option>
+    <option value="2026-01-15">15/01/2026</option>
+</select>
 </header>
 
 <div class="kpis">
-    <div class="kpi">
-        <h2 id="ventas">–</h2>
-        <span>Ventas totales</span>
-    </div>
-    <div class="kpi">
-        <h2 id="nodos">–</h2>
-        <span>Nodos con ventas</span>
-    </div>
-    <div class="kpi">
-        <h2 id="zonas_sin">–</h2>
-        <span>Zonas sin ventas</span>
-    </div>
-    <div class="kpi">
-        <h2 id="zonas_totales">–</h2>
-        <span>Zonas totales</span>
-    </div>
+    <div class="kpi"><h2 id="ventas">–</h2><span>Ventas totales</span></div>
+    <div class="kpi"><h2 id="nodos">–</h2><span>Nodos con ventas</span></div>
+    <div class="kpi"><h2 id="zonas_sin">–</h2><span>Zonas sin ventas</span></div>
+    <div class="kpi"><h2 id="zonas_totales">–</h2><span>Zonas totales</span></div>
 </div>
 
 <iframe id="mapa"></iframe>
+
+<div class="ranking">
+<h3>📉 Zonas críticas</h3>
+<table>
+<thead>
+<tr>
+<th>Zona</th>
+<th>Ventas</th>
+<th>Nodos</th>
+</tr>
+</thead>
+<tbody id="tabla-zonas"></tbody>
+</table>
+</div>
 
 <script>
 function cambiarFecha(fecha) {
@@ -105,14 +121,31 @@ function cambiarFecha(fecha) {
     document.getElementById("mapa").src = `mapas/mapa_${fecha}.html`;
 
     fetch(`mapas/kpis_${fecha}.json`)
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById("ventas").innerText = data.ventas_totales;
-            document.getElementById("nodos").innerText = data.nodos_con_ventas;
-            document.getElementById("zonas_sin").innerText = data.zonas_sin_ventas;
-            document.getElementById("zonas_totales").innerText = data.zonas_totales;
+        .then(r => r.json())
+        .then(d => {
+            ventas.innerText = d.ventas_totales;
+            nodos.innerText = d.nodos_con_ventas;
+            zonas_sin.innerText = d.zonas_sin_ventas;
+            zonas_totales.innerText = d.zonas_totales;
+
+            const tbody = document.getElementById("tabla-zonas");
+            tbody.innerHTML = "";
+
+            d.ranking_zonas
+              .sort((a,b)=>a.ventas-b.ventas)
+              .slice(0,10)
+              .forEach(z=>{
+                tbody.innerHTML += `
+                  <tr>
+                    <td>${z.zona}</td>
+                    <td>${z.ventas}</td>
+                    <td>${z.nodos}</td>
+                  </tr>`;
+              });
         });
 }
+
+cambiarFecha("2026-01-15");
 </script>
 
 </body>
