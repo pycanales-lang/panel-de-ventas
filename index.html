@@ -24,7 +24,7 @@ header {
     padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     font-size: 14px;
 }
 
@@ -49,7 +49,7 @@ select {
     padding: 12px;
     text-align: center;
 
-    /* 🔧 FIX VISUAL (sin romper lógica) */
+    /* 🔧 FIX CLAVE */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -126,9 +126,9 @@ th {
 📊 <strong>Dashboard Comercial</strong> — Fecha:
 <select onchange="cambiarFecha(this.value)">
     <option value="">Seleccionar</option>
-    <option value="2026-01-17">17/01/2026</option>
-    <option value="2026-01-18">18/01/2026</option>
-    <option value="2026-01-19">19/01/2026</option>
+    <option value="2026-01-13">13/01/2026</option>
+    <option value="2026-01-14">14/01/2026</option>
+    <option value="2026-01-15">15/01/2026</option>
 </select>
 </header>
 
@@ -171,30 +171,18 @@ th {
 </div>
 
 <script>
-/* =============================
-   UTILIDAD URL (SE MANTIENE)
-============================= */
-function getParam(name) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(name);
-}
-
-/* =============================
-   FUNCIÓN PRINCIPAL (LA BUENA)
-============================= */
-function cambiarFecha(fecha, ciudad=null, nodo=null) {
+function cambiarFecha(fecha) {
     if (!fecha) return;
 
-    const iframe = document.getElementById("mapa");
-    iframe.src = `mapas/mapa_${fecha}.html`;
+    document.getElementById("mapa").src = `mapas/mapa_${fecha}.html`;
 
     fetch(`mapas/kpis_${fecha}.json`)
         .then(res => res.json())
         .then(data => {
-            ventas.innerText = data.ventas_totales;
-            nodos.innerText = data.nodos_con_ventas;
-            zonas_sin.innerText = data.zonas_sin_ventas;
-            zonas_totales.innerText = data.zonas_totales;
+            document.getElementById("ventas").innerText = data.ventas_totales;
+            document.getElementById("nodos").innerText = data.nodos_con_ventas;
+            document.getElementById("zonas_sin").innerText = data.zonas_sin_ventas;
+            document.getElementById("zonas_totales").innerText = data.zonas_totales;
 
             const tbody = document.getElementById("tabla-zonas");
             tbody.innerHTML = "";
@@ -215,26 +203,10 @@ function cambiarFecha(fecha, ciudad=null, nodo=null) {
                     `;
                 });
         });
-
-    iframe.onload = () => {
-        const win = iframe.contentWindow;
-        if (ciudad) win.postMessage({ type: "FILTER_CIUDAD", ciudad }, "*");
-        if (nodo) win.postMessage({ type: "FOCUS_NODO", nodo }, "*");
-    };
 }
 
-/* =============================
-   AUTOLOAD (SE MANTIENE)
-============================= */
-const fechaURL  = getParam("fecha");
-const ciudadURL = getParam("ciudad");
-const nodoURL   = getParam("nodo");
-
-if (fechaURL) {
-    cambiarFecha(fechaURL, ciudadURL, nodoURL);
-} else {
-    cambiarFecha("2026-01-17");
-}
+// Cargar una fecha por defecto (opcional)
+cambiarFecha("2026-01-15");
 </script>
 
 </body>
