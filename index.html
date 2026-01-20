@@ -24,7 +24,7 @@ header {
     padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
     font-size: 14px;
 }
 
@@ -49,7 +49,7 @@ select {
     padding: 12px;
     text-align: center;
 
-    /* 🔧 FIX CLAVE */
+    /* 🔧 FIX VISUAL (sin romper lógica) */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -171,18 +171,30 @@ th {
 </div>
 
 <script>
-function cambiarFecha(fecha) {
+/* =============================
+   UTILIDAD URL (SE MANTIENE)
+============================= */
+function getParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+}
+
+/* =============================
+   FUNCIÓN PRINCIPAL (LA BUENA)
+============================= */
+function cambiarFecha(fecha, ciudad=null, nodo=null) {
     if (!fecha) return;
 
-    document.getElementById("mapa").src = `mapas/mapa_${fecha}.html`;
+    const iframe = document.getElementById("mapa");
+    iframe.src = `mapas/mapa_${fecha}.html`;
 
     fetch(`mapas/kpis_${fecha}.json`)
         .then(res => res.json())
         .then(data => {
-            document.getElementById("ventas").innerText = data.ventas_totales;
-            document.getElementById("nodos").innerText = data.nodos_con_ventas;
-            document.getElementById("zonas_sin").innerText = data.zonas_sin_ventas;
-            document.getElementById("zonas_totales").innerText = data.zonas_totales;
+            ventas.innerText = data.ventas_totales;
+            nodos.innerText = data.nodos_con_ventas;
+            zonas_sin.innerText = data.zonas_sin_ventas;
+            zonas_totales.innerText = data.zonas_totales;
 
             const tbody = document.getElementById("tabla-zonas");
             tbody.innerHTML = "";
@@ -203,10 +215,26 @@ function cambiarFecha(fecha) {
                     `;
                 });
         });
+
+    iframe.onload = () => {
+        const win = iframe.contentWindow;
+        if (ciudad) win.postMessage({ type: "FILTER_CIUDAD", ciudad }, "*");
+        if (nodo) win.postMessage({ type: "FOCUS_NODO", nodo }, "*");
+    };
 }
 
-// Cargar una fecha por defecto (opcional)
-cambiarFecha("2026-01-15");
+/* =============================
+   AUTOLOAD (SE MANTIENE)
+============================= */
+const fechaURL  = getParam("fecha");
+const ciudadURL = getParam("ciudad");
+const nodoURL   = getParam("nodo");
+
+if (fechaURL) {
+    cambiarFecha(fechaURL, ciudadURL, nodoURL);
+} else {
+    cambiarFecha("2026-01-17");
+}
 </script>
 
 </body>
