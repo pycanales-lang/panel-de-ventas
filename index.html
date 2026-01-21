@@ -2,241 +2,297 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Comercial – Business Intelligence</title>
+    <title>BI Dashboard – Ejecutivo & Híbrido</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            --primary-color: #003366;
-            --accent-color: #007bff;
-            --bg-light: #f4f7f6;
-            --text-dark: #2d3436;
+            --primary: #003366;
+            --accent: #007bff;
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
         }
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-light);
-            color: var(--text-dark);
-            overflow: hidden; /* Evita doble scroll */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
-        /* ===== HEADER EJECUTIVO ===== */
+        /* ===== HEADER ===== */
         header {
-            background: var(--primary-color);
+            background: var(--primary);
             color: white;
-            padding: 15px;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
         }
 
-        header h1 { font-size: 1.1rem; margin: 0; font-weight: 600; }
+        header h1 { font-size: 1.4rem; margin: 0; }
 
         select#fechaSelect {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 5px 10px;
-            border-radius: 6px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
         }
 
-        /* ===== CONTENEDORES DE VISTA ===== */
+        /* ===== CONTENIDO PRINCIPAL ===== */
+        main {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
         .view {
             display: none;
-            height: calc(100vh - 130px);
+            height: 100%;
+            width: 100%;
             overflow-y: auto;
-            padding: 15px;
         }
 
         .view.active { display: block; }
 
-        /* ===== TARJETAS KPI ===== */
-        .kpis-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .kpi-card {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .kpi-card h2 { margin: 0; font-size: 1.5rem; color: var(--primary-color); }
-        .kpi-card span { font-size: 0.75rem; color: #636e72; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* ===== GRÁFICOS ===== */
-        .chart-container {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        /* ===== NAVEGACIÓN INFERIOR (ESTILO APP) ===== */
-        .nav-tabs {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: white;
-            display: flex;
-            border-top: 1px solid #ddd;
-            height: 65px;
-        }
-
-        .nav-tab {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #b2bec3;
-            text-decoration: none;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-
-        .nav-tab.active {
-            color: var(--accent-color);
-            border-top: 3px solid var(--accent-color);
-        }
-
-        iframe#mapaFrame {
+        /* ===== MAPA (Ocupa todo el espacio) ===== */
+        #mapaFrame {
             width: 100%;
             height: 100%;
             border: none;
         }
 
-        .icon { font-size: 1.2rem; margin-bottom: 4px; }
+        /* ===== SECCIÓN RESUMEN (GRID DINÁMICO) ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .kpis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        .kpi-card h2 { margin: 10px 0; font-size: 2rem; color: var(--primary); }
+
+        /* Gráficos en paralelo en PC, uno arriba de otro en Móvil */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* ===== NAVEGACIÓN ===== */
+        .nav-bar {
+            background: white;
+            display: flex;
+            justify-content: center;
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .nav-btn {
+            padding: 10px 40px;
+            cursor: pointer;
+            border-radius: 20px;
+            margin: 0 10px;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* ===== RESPONSIVE (CELULARES) ===== */
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr; /* Una columna en móvil */
+            }
+            .nav-btn {
+                padding: 10px 20px;
+                flex: 1;
+                font-size: 0.9rem;
+            }
+            .kpis-grid {
+                grid-template-columns: 1fr 1fr; /* Dos columnas de KPIs */
+            }
+            header h1 { font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>📈 BI Dashboard</h1>
-    <select id="fechaSelect" onchange="cambiarFecha(this.value)">
-        <option value="">Fecha</option>
-        <option value="2025-10-31">31/10/2025</option>
-        <option value="2025-11-30">30/11/2025</option>
-        <option value="2025-12-31">31/12/2025</option>
-        <option value="2026-01-19">19/01/2026</option>
-    </select>
+    <h1>📊 DashCom v2.0</h1>
+    <div>
+        <select id="fechaSelect" onchange="cambiarFecha(this.value)">
+            <option value="">Seleccionar Fecha</option>
+            <option value="2025-12-31">31/12/2025</option>
+            <option value="2026-01-19">19/01/2026</option>
+        </select>
+    </div>
 </header>
 
-<div id="view-mapa" class="view active" style="padding:0;">
-    <iframe id="mapaFrame" src=""></iframe>
-</div>
+<main>
+    <div id="v-mapa" class="view active">
+        <iframe id="mapaFrame" src=""></iframe>
+    </div>
 
-<div id="view-resumen" class="view">
-    <div class="kpis-grid">
-        <div class="kpi-card">
-            <h2 id="kpi-ventas">0</h2>
-            <span>Ventas Netas</span>
+    <div id="v-resumen" class="view">
+        <div class="container">
+            <div class="kpis-grid">
+                <div class="kpi-card">
+                    <span>VENTAS TOTALES</span>
+                    <h2 id="k-ventas">0</h2>
+                </div>
+                <div class="kpi-card">
+                    <span>NODOS ACTIVOS</span>
+                    <h2 id="k-nodos">0</h2>
+                </div>
+                <div class="kpi-card">
+                    <span>ZONAS SIN VENTA</span>
+                    <h2 id="k-sin">0</h2>
+                </div>
+                <div class="kpi-card">
+                    <span>CUMPLIMIENTO</span>
+                    <h2 id="k-pct">0%</h2>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Ventas por Zona Comercial</h3>
+                    <canvas id="chartBar"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Distribución de Presencia</h3>
+                    <canvas id="chartPie"></canvas>
+                </div>
+            </div>
         </div>
-        <div class="kpi-card">
-            <h2 id="kpi-nodos">0</h2>
-            <span>Eficiencia Nodos</span>
-        </div>
     </div>
+</main>
 
-    <div class="chart-container">
-        <canvas id="chartVentasZonas"></canvas>
-    </div>
-
-    <div class="chart-container">
-        <canvas id="chartDistribucion"></canvas>
-    </div>
-</div>
-
-<nav class="nav-tabs">
-    <div class="nav-tab active" onclick="switchView('view-mapa', this)">
-        <span class="icon">🗺️</span>
-        <span>Mapa</span>
-    </div>
-    <div class="nav-tab" onclick="switchView('view-resumen', this)">
-        <span class="icon">📊</span>
-        <span>Resumen</span>
-    </div>
+<nav class="nav-bar">
+    <div class="nav-btn active" onclick="showV('v-mapa', this)">📍 Mapa</div>
+    <div class="nav-btn" onclick="showV('v-resumen', this)">📊 Resumen</div>
 </nav>
 
 <script>
-let ventasChart;
+let bChart, pChart;
 
-function switchView(viewId, el) {
-    // Cambiar pestañas
+function showV(id, btn) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    
-    document.getElementById(viewId).classList.add('active');
-    el.classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
 }
 
-function cambiarFecha(fecha) {
-    if (!fecha) return;
-
-    // Actualizar Mapa
-    document.getElementById("mapaFrame").src = `mapas/mapa_${fecha}.html`;
-
-    // Cargar Datos
-    fetch(`mapas/kpis_${fecha}.json`)
-        .then(res => res.json())
+function cambiarFecha(f) {
+    if(!f) return;
+    document.getElementById("mapaFrame").src = `mapas/mapa_${f}.html`;
+    
+    fetch(`mapas/kpis_${f}.json`)
+        .then(r => r.json())
         .then(data => {
-            actualizarKPIs(data);
-            actualizarGraficos(data);
+            renderDash(data);
         });
 }
 
-function actualizarKPIs(data) {
-    document.getElementById("kpi-ventas").innerText = data.ventas_totales.toLocaleString();
-    document.getElementById("kpi-nodos").innerText = data.nodos_con_ventas;
-}
+function renderDash(data) {
+    // Actualizar Números
+    document.getElementById("k-ventas").innerText = data.ventas_totales.toLocaleString();
+    document.getElementById("k-nodos").innerText = data.nodos_con_ventas;
+    document.getElementById("k-sin").innerText = data.zonas_sin_ventas;
+    let pct = ((data.nodos_con_ventas / data.zonas_totales) * 100).toFixed(1);
+    document.getElementById("k-pct").innerText = pct + "%";
 
-function actualizarGraficos(data) {
-    const ctx = document.getElementById('chartVentasZonas').getContext('2d');
-    
-    if (ventasChart) ventasChart.destroy();
-
-    // Simulación de datos por zonas (esto podrías enviarlo en el JSON de Python)
-    ventasChart = new Chart(ctx, {
+    // Gráfico de Barras
+    const ctxB = document.getElementById('chartBar').getContext('2d');
+    if(bChart) bChart.destroy();
+    bChart = new Chart(ctxB, {
         type: 'bar',
         data: {
-            labels: ['Norte', 'Sur', 'Este', 'Oeste', 'Central'],
+            labels: ['Norte', 'Centro', 'Sur', 'Este', 'Chaco'],
             datasets: [{
-                label: 'Ventas por Región',
-                data: [data.ventas_totales * 0.2, data.ventas_totales * 0.15, data.ventas_totales * 0.3, data.ventas_totales * 0.1, data.ventas_totales * 0.25],
+                label: 'Ventas',
+                data: [data.ventas_totales*0.3, data.ventas_totales*0.4, data.ventas_totales*0.1, data.ventas_totales*0.15, data.ventas_totales*0.05],
                 backgroundColor: '#007bff'
             }]
         },
-        options: {
-            responsive: true,
-            plugins: { legend: { display: false } }
-        }
+        options: { responsive: true }
     });
 
-    // Gráfico de Dona para Zonas
-    const ctx2 = document.getElementById('chartDistribucion').getContext('2d');
-    new Chart(ctx2, {
-        type: 'doughnut',
-        data: {
-            labels: ['Con Ventas', 'Sin Ventas'],
-            datasets: [{
-                data: [data.nodos_con_ventas, data.zonas_totales - data.nodos_con_ventas],
-                backgroundColor: ['#2ecc71', '#e74c3c']
-            }]
+// Gráfico de Torta - Análisis de Cobertura de Ventas
+const ctxP = document.getElementById('chartPie').getContext('2d');
+if(pChart) pChart.destroy();
+
+// LÓGICA CORRECTA: 
+// Usamos el total de NODOS para ver la efectividad real en el mapa
+const nodosTotales = data.nodos_totales || (data.nodos_con_ventas + data.zonas_sin_ventas); // Asegurar que sumen el universo total
+const nodosSinVenta = data.nodos_sin_ventas || 0; 
+
+pChart = new Chart(ctxP, {
+    type: 'doughnut',
+    data: {
+        labels: ['Nodos con Venta', 'Nodos sin Venta'],
+        datasets: [{
+            data: [data.nodos_con_ventas, nodosSinVenta],
+            backgroundColor: ['#28a745', '#dc3545'], // Verde y Rojo Ejecutivo
+            borderWidth: 2,
+            hoverOffset: 10
+        }]
+    },
+    options: { 
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom', // Mejor para notebooks y móviles
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        let total = context.dataset.data[0] + context.dataset.data[1];
+                        let percentage = ((context.raw / total) * 100).toFixed(1);
+                        return `${context.label}: ${context.raw} (${percentage}%)`;
+                    }
+                }
+            }
         }
-    });
+    }
+});
 }
 </script>
 
 </body>
 </html>
-
