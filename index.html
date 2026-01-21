@@ -17,12 +17,12 @@
 
         body {
             margin: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: #333;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Altura fija para evitar saltos */
+            height: 100vh;
             overflow: hidden;
         }
 
@@ -34,7 +34,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
         }
 
@@ -45,9 +44,7 @@
             padding: 6px 10px;
             border-radius: 6px;
             border: none;
-            font-size: 0.85rem;
             font-weight: bold;
-            max-width: 150px;
         }
 
         /* ===== CONTENIDO PRINCIPAL ===== */
@@ -55,22 +52,20 @@
             flex: 1;
             overflow-y: auto;
             position: relative;
-            -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
         }
 
         .view {
             display: none;
-            padding-bottom: var(--nav-height); /* Espacio para la nav inferior */
+            height: 100%;
         }
 
         .view.active { display: block; }
 
-        /* Mapa ocupa todo el viewport menos header y nav */
-        #v-mapa { height: 100%; }
         #mapaFrame {
             width: 100%;
             height: calc(100vh - 120px); 
             border: none;
+            display: block;
         }
 
         /* ===== SECCIÓN RESUMEN ===== */
@@ -78,30 +73,31 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 15px;
+            padding-bottom: 80px; /* Espacio para nav móvil */
         }
 
         .kpis-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columnas en móvil */
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin-bottom: 20px;
         }
 
         .kpi-card {
             background: var(--card-bg);
-            padding: 15px 10px;
+            padding: 15px;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             text-align: center;
             border-bottom: 3px solid var(--accent);
         }
 
-        .kpi-card span { font-size: 0.7rem; color: #666; font-weight: bold; display: block; margin-bottom: 5px; }
-        .kpi-card h2 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+        .kpi-card span { font-size: 0.7rem; color: #666; font-weight: bold; display: block; }
+        .kpi-card h2 { margin: 5px 0 0; font-size: 1.4rem; color: var(--primary); }
 
         .charts-grid {
             display: grid;
-            grid-template-columns: 1fr; /* 1 columna en móvil */
+            grid-template-columns: 1fr;
             gap: 20px;
         }
 
@@ -111,91 +107,34 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
-        
-        .chart-card h3 { font-size: 0.95rem; margin-top: 0; margin-bottom: 15px; color: var(--primary); }
 
-        /* ===== NAVEGACIÓN INFERIOR (ESTILO APP) ===== */
+        /* ===== NAVEGACIÓN INFERIOR ===== */
         .nav-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: var(--nav-height);
+            bottom: 0; width: 100%; height: var(--nav-height);
             background: white;
             display: flex;
-            justify-content: space-around;
-            align-items: center;
             border-top: 1px solid #ddd;
-            padding-bottom: env(safe-area-inset-bottom); /* Soporte para iPhone notch */
             z-index: 2000;
         }
 
         .nav-btn {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: none;
-            background: none;
-            color: #777;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.2s;
+            flex: 1; border: none; background: none; color: #777;
+            font-weight: 600; font-size: 0.85rem; cursor: pointer;
         }
 
         .nav-btn.active {
             color: var(--accent);
             background: #f0f7ff;
+            border-top: 3px solid var(--accent);
         }
 
-        /* Indicador visual activo superior */
-        .nav-btn.active::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            width: 30%;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 0 0 4px 4px;
-        }
-
-        /* ===== MEDIA QUERIES PARA NOTEBOOK ===== */
         @media (min-width: 768px) {
-            header h1 { font-size: 1.4rem; }
-            header { padding: 1rem 2rem; }
-            
-            .kpis-grid {
-                grid-template-columns: repeat(4, 1fr); /* 4 columnas en PC */
-                gap: 20px;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr 1fr; /* 2 columnas en PC */
-            }
-
-            .kpi-card h2 { font-size: 1.8rem; }
-            
-            /* Ajuste de Nav para PC */
-            .nav-bar {
-                position: relative;
-                height: 50px;
-                border-top: none;
-                justify-content: center;
-                gap: 20px;
-            }
-            .nav-btn {
-                flex: none;
-                width: 150px;
-                border-radius: 8px;
-                height: 40px;
-            }
-            .nav-btn.active::before { display: none; }
-            .nav-btn.active { border-radius: 20px; }
-            
-            .view { padding-bottom: 20px; }
+            .kpis-grid { grid-template-columns: repeat(4, 1fr); }
+            .charts-grid { grid-template-columns: 1fr 1fr; }
+            .nav-bar { position: static; height: 50px; border: none; justify-content: center; }
+            .nav-btn { flex: none; width: 200px; }
+            #mapaFrame { height: calc(100vh - 130px); }
         }
     </style>
 </head>
@@ -204,8 +143,8 @@
 <header>
     <h1>📊 DashCom v2.0</h1>
     <select id="fechaSelect" onchange="cambiarFecha(this.value)">
-        <option value="">Fecha</option>
-        <option value="2025-10-31">31/10/2025</option>
+        <option value="">Seleccionar Fecha</option>
+        <option value="2025-12-31">31/12/2025</option>
         <option value="2026-01-19">19/01/2026</option>
     </select>
 </header>
@@ -217,34 +156,15 @@
 
     <div id="v-resumen" class="view">
         <div class="container">
-            <div class="kpis-grid">
-                <div class="kpi-card">
-                    <span>VENTAS TOTALES</span>
-                    <h2 id="k-ventas">0</h2>
-                </div>
-                <div class="kpi-card">
-                    <span>NODOS ACTIVOS</span>
-                    <h2 id="k-nodos">0</h2>
-                </div>
-                <div class="kpi-card">
-                    <span>SIN VENTA</span>
-                    <h2 id="k-sin">0</h2>
-                </div>
-                <div class="kpi-card">
-                    <span>COBERTURA</span>
-                    <h2 id="k-pct">0%</h2>
-                </div>
+            <div class="kpis-grid" id="kpiContainer">
+                <div class="kpi-card"><span>VENTAS TOTALES</span><h2 id="k-ventas">0</h2></div>
+                <div class="kpi-card"><span>NODOS ACTIVOS</span><h2 id="k-nodos">0</h2></div>
+                <div class="kpi-card"><span>SIN VENTA</span><h2 id="k-sin">0</h2></div>
+                <div class="kpi-card"><span>COBERTURA</span><h2 id="k-pct">0%</h2></div>
             </div>
-
             <div class="charts-grid">
-                <div class="chart-card">
-                    <h3>Ventas por Zona</h3>
-                    <canvas id="chartBar"></canvas>
-                </div>
-                <div class="chart-card">
-                    <h3>Distribución Nodos</h3>
-                    <canvas id="chartPie"></canvas>
-                </div>
+                <div class="chart-card"><h3>Ventas por Zona</h3><canvas id="chartBar"></canvas></div>
+                <div class="chart-card"><h3>Distribución Nodos</h3><canvas id="chartPie"></canvas></div>
             </div>
         </div>
     </div>
@@ -256,23 +176,78 @@
 </nav>
 
 <script>
-    // Tu lógica de JS se mantiene igual, solo asegúrate de que el renderizado de ChartJS 
-    // sea responsivo (ya está en tus opciones)
     let bChart, pChart;
 
+    // 1. FUNCIÓN PARA MOSTRAR VISTAS
     function showV(id, btn) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
-        
-        // Reset scroll position
-        document.querySelector('main').scrollTop = 0;
     }
 
-    // El resto de tus funciones (cambiarFecha, renderDash) permanecen intactas.
-    // ... (Mantén tu código de Chart.js aquí)
+    // 2. FUNCIÓN PARA CARGAR DATOS (EL MOTOR)
+    function cambiarFecha(f) {
+        if(!f) return;
+        
+        // Carga el mapa en el iframe
+        // IMPORTANTE: Asegúrate que la carpeta 'mapas' esté al mismo nivel que este archivo
+        document.getElementById("mapaFrame").src = `mapas/mapa_${f}.html`;
+        
+        // Carga los KPIs del JSON
+        fetch(`mapas/kpis_${f}.json`)
+            .then(r => {
+                if (!r.ok) throw new Error("Archivo JSON no encontrado");
+                return r.json();
+            })
+            .then(data => {
+                renderDash(data);
+            })
+            .catch(err => console.error("Error cargando datos:", err));
+    }
+
+    // 3. FUNCIÓN PARA RENDERIZAR GRÁFICOS Y NÚMEROS
+    function renderDash(data) {
+        // Actualizar KPIs
+        document.getElementById("k-ventas").innerText = data.ventas_totales.toLocaleString();
+        document.getElementById("k-nodos").innerText = data.nodos_con_ventas;
+        document.getElementById("k-sin").innerText = data.nodos_sin_ventas || 0;
+        
+        let total = data.nodos_con_ventas + (data.nodos_sin_ventas || 0);
+        let pct = total > 0 ? ((data.nodos_con_ventas / total) * 100).toFixed(1) : 0;
+        document.getElementById("k-pct").innerText = pct + "%";
+
+        // Gráfico de Barras
+        const ctxB = document.getElementById('chartBar').getContext('2d');
+        if(bChart) bChart.destroy();
+        bChart = new Chart(ctxB, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(data.ventas_por_zona || {}),
+                datasets: [{
+                    label: 'Ventas',
+                    data: Object.values(data.ventas_por_zona || {}),
+                    backgroundColor: '#007bff'
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // Gráfico de Torta
+        const ctxP = document.getElementById('chartPie').getContext('2d');
+        if(pChart) pChart.destroy();
+        pChart = new Chart(ctxP, {
+            type: 'doughnut',
+            data: {
+                labels: ['Con Venta', 'Sin Venta'],
+                datasets: [{
+                    data: [data.nodos_con_ventas, data.nodos_sin_ventas || 0],
+                    backgroundColor: ['#28a745', '#dc3545']
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
 </script>
 </body>
 </html>
-
