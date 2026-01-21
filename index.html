@@ -2,33 +2,55 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard Comercial</title>
+<title>Dashboard Comercial – Cobertura y Ventas</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
+/* ===== RESET ===== */
+* {
+    box-sizing: border-box;
 }
 
+/* ===== BODY ===== */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f8;
+    color: #333;
+}
+
+/* ===== HEADER ===== */
 header {
     background: #003366;
     color: white;
-    padding: 12px 20px;
+    padding: 12px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
 }
 
-select {
+header h1 {
+    font-size: 18px;
+    margin: 0;
+    flex: 1 1 100%;
+}
+
+header select {
     padding: 6px 10px;
+    font-size: 14px;
     border-radius: 4px;
     border: none;
 }
 
+/* ===== KPIS ===== */
 .kpis {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
     padding: 12px;
-    background: white;
+    background: #ffffff;
 }
 
 .kpi {
@@ -36,6 +58,7 @@ select {
     border-radius: 8px;
     padding: 12px;
     text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .kpi h2 {
@@ -49,32 +72,26 @@ select {
     color: #666;
 }
 
-iframe {
+/* ===== MAPA ===== */
+#mapa {
     width: 100%;
-    height: calc(100vh - 230px);
+    height: calc(100vh - 220px);
     border: none;
 }
 
-.ranking {
-    background: white;
-    padding: 12px;
-}
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 16px;
+    }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
+    .kpi h2 {
+        font-size: 20px;
+    }
 
-th, td {
-    padding: 6px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
-}
-
-th {
-    background: #003366;
-    color: white;
+    #mapa {
+        height: calc(100vh - 240px);
+    }
 }
 </style>
 </head>
@@ -82,75 +99,60 @@ th {
 <body>
 
 <header>
-📊 Dashboard Comercial — Fecha:
-<select onchange="cambiarFecha(this.value)">
-    <option value="">Seleccionar</option>
-    <option value="2026-01-19">19/01/2026</option>
-    <option value="2025-12-31">31/12/2025</option>
-</select>
+    <h1>📊 Dashboard Comercial</h1>
+
+    📅 Fecha:
+    <select id="fechaSelect" onchange="cambiarFecha(this.value)">
+        <option value="">Seleccionar</option>
+        <option value="2025-12-31">31/12/2025</option>
+        <option value="2026-01-19">19/01/2026</option>
+    </select>
 </header>
 
+<!-- KPIs -->
 <div class="kpis">
-    <div class="kpi"><h2 id="ventas">–</h2><span>Ventas totales</span></div>
-    <div class="kpi"><h2 id="nodos">–</h2><span>Nodos con ventas</span></div>
-    <div class="kpi"><h2 id="zonas_sin">–</h2><span>Zonas sin ventas</span></div>
-    <div class="kpi"><h2 id="zonas_totales">–</h2><span>Zonas totales</span></div>
+    <div class="kpi">
+        <h2 id="ventas">–</h2>
+        <span>Ventas totales</span>
+    </div>
+    <div class="kpi">
+        <h2 id="nodos">–</h2>
+        <span>Nodos con ventas</span>
+    </div>
+    <div class="kpi">
+        <h2 id="zonas_sin">–</h2>
+        <span>Zonas sin ventas</span>
+    </div>
+    <div class="kpi">
+        <h2 id="zonas_totales">–</h2>
+        <span>Zonas totales</span>
+    </div>
 </div>
 
+<!-- MAPA -->
 <iframe id="mapa"></iframe>
-
-<div class="ranking">
-<h3>📉 Zonas críticas</h3>
-<table>
-<thead>
-<tr>
-<th>Zona</th>
-<th>Ventas</th>
-<th>Nodos</th>
-</tr>
-</thead>
-<tbody id="tabla-zonas"></tbody>
-</table>
-</div>
 
 <script>
 function cambiarFecha(fecha) {
     if (!fecha) return;
 
+    // Cambiar mapa
     document.getElementById("mapa").src = `mapas/mapa_${fecha}.html`;
 
+    // Cargar KPIs de la fecha seleccionada
     fetch(`mapas/kpis_${fecha}.json`)
-        .then(r => r.json())
-        .then(d => {
-            ventas.innerText = d.ventas_totales;
-            nodos.innerText = d.nodos_con_ventas;
-            zonas_sin.innerText = d.zonas_sin_ventas;
-            zonas_totales.innerText = d.zonas_totales;
-
-            const tbody = document.getElementById("tabla-zonas");
-            tbody.innerHTML = "";
-
-            d.ranking_zonas
-              .sort((a,b)=>a.ventas-b.ventas)
-              .slice(0,10)
-              .forEach(z=>{
-                tbody.innerHTML += `
-                  <tr>
-                    <td>${z.zona}</td>
-                    <td>${z.ventas}</td>
-                    <td>${z.nodos}</td>
-                  </tr>`;
-              });
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("ventas").innerText = data.ventas_totales;
+            document.getElementById("nodos").innerText = data.nodos_con_ventas;
+            document.getElementById("zonas_sin").innerText = data.zonas_sin_ventas;
+            document.getElementById("zonas_totales").innerText = data.zonas_totales;
+        })
+        .catch(err => {
+            console.error("Error cargando KPIs:", err);
         });
 }
-
-cambiarFecha("2026-01-19");
 </script>
 
 </body>
 </html>
-
-
-
-
-
