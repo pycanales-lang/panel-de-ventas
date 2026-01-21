@@ -231,6 +231,15 @@ function showV(id, btn) {
     btn.classList.add('active');
 }
 
+function showV(id, btn) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
 function cambiarFecha(f) {
     if(!f) return;
     document.getElementById("mapaFrame").src = `mapas/mapa_${f}.html`;
@@ -310,6 +319,7 @@ pChart = new Chart(ctxP, {
 
 </body>
 </html>
+
 
 
 
