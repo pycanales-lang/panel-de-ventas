@@ -21,7 +21,7 @@
             color: #333;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh; /* 👈 clave */
         }
 
         /* ===== HEADER ===== */
@@ -48,7 +48,7 @@
         /* ===== CONTENIDO PRINCIPAL ===== */
         main {
             flex: 1;
-            overflow: hidden;
+            overflow-y: auto;   /* 👈 permitir scroll */
             position: relative;
         }
 
@@ -108,12 +108,23 @@
         }
 
         /* ===== NAVEGACIÓN ===== */
-        .nav-bar {
-            background: white;
-            display: flex;
-            justify-content: center;
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
+        @media (max-width: 768px) {
+        
+            main {
+                padding-bottom: 70px; /* espacio para la nav */
+            }
+        
+            .container {
+                padding: 15px 10px;
+            }
+        
+            .kpi-card h2 {
+                font-size: 1.6rem;
+            }
+        
+            .chart-card {
+                padding: 15px;
+            }
         }
 
         .nav-btn {
@@ -299,6 +310,7 @@ pChart = new Chart(ctxP, {
 
 </body>
 </html>
+
 
 
 
