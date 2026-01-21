@@ -236,7 +236,8 @@ function renderDash(data) {
     document.getElementById("k-ventas").innerText = data.ventas_totales.toLocaleString();
     document.getElementById("k-nodos").innerText = data.nodos_con_ventas;
     document.getElementById("k-sin").innerText = data.zonas_sin_ventas;
-    let pct = ((data.nodos_con_ventas / data.zonas_totales) * 100).toFixed(1);
+    // ===== KPI CUMPLIMIENTO CORRECTO =====
+    let pct = ((data.nodos_con_ventas / data.nodos_totales) * 100).toFixed(1);
     document.getElementById("k-pct").innerText = pct + "%";
 
     // Gráfico de Barras
@@ -298,4 +299,5 @@ pChart = new Chart(ctxP, {
 
 </body>
 </html>
+
 
