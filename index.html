@@ -1,258 +1,213 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>BI Dashboard – Ejecutivo & Híbrido</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        :root {
-            --primary: #003366;
-            --accent: #007bff;
-            --bg: #f0f2f5;
-            --card-bg: #ffffff;
-            --nav-height: 65px;
-        }
+<meta charset="UTF-8">
+<title>Dashboard Comercial</title>
 
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+}
 
-        /* ===== HEADER ===== */
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 0.8rem 1.2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
+body {
+    display: flex;
+    flex-direction: column;
+}
 
-        header h1 { font-size: 1.1rem; margin: 0; }
+/* ===== HEADER ===== */
+header {
+    background: #003366;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
 
-        select#fechaSelect {
-            background: white;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: none;
-            font-weight: bold;
-        }
+select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: none;
+}
 
-        /* ===== CONTENIDO PRINCIPAL ===== */
-        main {
-            flex: 1;
-            overflow-y: auto;
-            position: relative;
-        }
+/* ===== KPIs ===== */
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 12px;
+    background: #ffffff;
+}
 
-        .view {
-            display: none;
-            height: 100%;
-        }
+.kpi {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
 
-        .view.active { display: block; }
+    /* 🔧 FIX CLAVE */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
-        #mapaFrame {
-            width: 100%;
-            height: calc(100vh - 120px); 
-            border: none;
-            display: block;
-        }
+.kpi h2 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.2;
+    color: #003366;
+}
 
-        /* ===== SECCIÓN RESUMEN ===== */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px;
-            padding-bottom: 80px; /* Espacio para nav móvil */
-        }
+.kpi span {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #666;
+}
 
-        .kpis-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
+/* ===== MAPA ===== */
+.mapa-container {
+    flex: 1;
+    display: flex;
+}
 
-        .kpi-card {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            text-align: center;
-            border-bottom: 3px solid var(--accent);
-        }
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
 
-        .kpi-card span { font-size: 0.7rem; color: #666; font-weight: bold; display: block; }
-        .kpi-card h2 { margin: 5px 0 0; font-size: 1.4rem; color: var(--primary); }
+/* ===== RANKING ===== */
+.ranking {
+    background: #ffffff;
+    padding: 14px;
+    font-size: 13px;
+}
 
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
+.ranking h3 {
+    margin: 0 0 8px 0;
+    color: #003366;
+}
 
-        .chart-card {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-        /* ===== NAVEGACIÓN INFERIOR ===== */
-        .nav-bar {
-            position: fixed;
-            bottom: 0; width: 100%; height: var(--nav-height);
-            background: white;
-            display: flex;
-            border-top: 1px solid #ddd;
-            z-index: 2000;
-        }
+th, td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
 
-        .nav-btn {
-            flex: 1; border: none; background: none; color: #777;
-            font-weight: 600; font-size: 0.85rem; cursor: pointer;
-        }
+th {
+    background: #f4f6f8;
+    font-size: 12px;
+}
 
-        .nav-btn.active {
-            color: var(--accent);
-            background: #f0f7ff;
-            border-top: 3px solid var(--accent);
-        }
+.critica {
+    color: #c0392b;
+    font-weight: bold;
+}
 
-        @media (min-width: 768px) {
-            .kpis-grid { grid-template-columns: repeat(4, 1fr); }
-            .charts-grid { grid-template-columns: 1fr 1fr; }
-            .nav-bar { position: static; height: 50px; border: none; justify-content: center; }
-            .nav-btn { flex: none; width: 200px; }
-            #mapaFrame { height: calc(100vh - 130px); }
-        }
-    </style>
+.ok {
+    color: #27ae60;
+    font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
 <header>
-    <h1>📊 DashCom v2.0</h1>
-    <select id="fechaSelect" onchange="cambiarFecha(this.value)">
-        <option value="">Seleccionar Fecha</option>
-        <option value="2025-10-31">31/10/2025</option>
-        <option value="2025-11-30">30/11/2025</option>
-        <option value="2025-12-31">31/12/2025</option>
-        <option value="2026-01-20">20/01/2026</option>
-    </select>
+📊 <strong>Dashboard Comercial</strong> — Fecha:
+<select onchange="cambiarFecha(this.value)">
+    <option value="">Seleccionar</option>
+    <option value="2026-01-17">17/01/2026</option>
+    <option value="2026-01-18">18/01/2026</option>
+    <option value="2026-01-19">19/01/2026</option>
+</select>
 </header>
 
-<main>
-    <div id="v-mapa" class="view active">
-        <iframe id="mapaFrame" src=""></iframe>
+<div class="kpis">
+    <div class="kpi">
+        <h2 id="ventas">–</h2>
+        <span>Ventas totales</span>
     </div>
-
-    <div id="v-resumen" class="view">
-        <div class="container">
-            <div class="kpis-grid" id="kpiContainer">
-                <div class="kpi-card"><span>VENTAS TOTALES</span><h2 id="k-ventas">0</h2></div>
-                <div class="kpi-card"><span>NODOS ACTIVOS</span><h2 id="k-nodos">0</h2></div>
-                <div class="kpi-card"><span>SIN VENTA</span><h2 id="k-sin">0</h2></div>
-                <div class="kpi-card"><span>COBERTURA</span><h2 id="k-pct">0%</h2></div>
-            </div>
-            <div class="charts-grid">
-                <div class="chart-card"><h3>Ventas por Zona</h3><canvas id="chartBar"></canvas></div>
-                <div class="chart-card"><h3>Distribución Nodos</h3><canvas id="chartPie"></canvas></div>
-            </div>
-        </div>
+    <div class="kpi">
+        <h2 id="nodos">–</h2>
+        <span>Nodos con ventas</span>
     </div>
-</main>
+    <div class="kpi">
+        <h2 id="zonas_sin">–</h2>
+        <span>Zonas sin ventas</span>
+    </div>
+    <div class="kpi">
+        <h2 id="zonas_totales">–</h2>
+        <span>Zonas totales</span>
+    </div>
+</div>
 
-<nav class="nav-bar">
-    <button class="nav-btn active" onclick="showV('v-mapa', this)">📍 Mapa</button>
-    <button class="nav-btn" onclick="showV('v-resumen', this)">📊 Resumen</button>
-</nav>
+<div class="mapa-container">
+    <iframe id="mapa"></iframe>
+</div>
+
+<div class="ranking">
+    <h3>📉 Zonas críticas</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Zona</th>
+                <th>Ventas</th>
+                <th>Nodos</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-zonas"></tbody>
+    </table>
+</div>
 
 <script>
-    let bChart, pChart;
+function cambiarFecha(fecha) {
+    if (!fecha) return;
 
-    // 1. FUNCIÓN PARA MOSTRAR VISTAS
-    function showV(id, btn) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
-    }
+    document.getElementById("mapa").src = `mapas/mapa_${fecha}.html`;
 
-    // 2. FUNCIÓN PARA CARGAR DATOS (EL MOTOR)
-    function cambiarFecha(f) {
-        if(!f) return;
-        
-        // Carga el mapa en el iframe
-        // IMPORTANTE: Asegúrate que la carpeta 'mapas' esté al mismo nivel que este archivo
-        document.getElementById("mapaFrame").src = `mapas/mapa_${f}.html`;
-        
-        // Carga los KPIs del JSON
-        fetch(`mapas/kpis_${f}.json`)
-            .then(r => {
-                if (!r.ok) throw new Error("Archivo JSON no encontrado");
-                return r.json();
-            })
-            .then(data => {
-                renderDash(data);
-            })
-            .catch(err => console.error("Error cargando datos:", err));
-    }
+    fetch(`mapas/kpis_${fecha}.json`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("ventas").innerText = data.ventas_totales;
+            document.getElementById("nodos").innerText = data.nodos_con_ventas;
+            document.getElementById("zonas_sin").innerText = data.zonas_sin_ventas;
+            document.getElementById("zonas_totales").innerText = data.zonas_totales;
 
-    // 3. FUNCIÓN PARA RENDERIZAR GRÁFICOS Y NÚMEROS
-    function renderDash(data) {
-        // Actualizar KPIs
-        document.getElementById("k-ventas").innerText = data.ventas_totales.toLocaleString();
-        document.getElementById("k-nodos").innerText = data.nodos_con_ventas;
-        document.getElementById("k-sin").innerText = data.nodos_sin_ventas || 0;
-        
-        let total = data.nodos_con_ventas + (data.nodos_sin_ventas || 0);
-        let pct = total > 0 ? ((data.nodos_con_ventas / total) * 100).toFixed(1) : 0;
-        document.getElementById("k-pct").innerText = pct + "%";
+            const tbody = document.getElementById("tabla-zonas");
+            tbody.innerHTML = "";
 
-        // Gráfico de Barras
-        const ctxB = document.getElementById('chartBar').getContext('2d');
-        if(bChart) bChart.destroy();
-        bChart = new Chart(ctxB, {
-            type: 'bar',
-            data: {
-                labels: Object.keys(data.ventas_por_zona || {}),
-                datasets: [{
-                    label: 'Ventas',
-                    data: Object.values(data.ventas_por_zona || {}),
-                    backgroundColor: '#007bff'
-                }]
-            },
-            options: { responsive: true }
+            data.ranking_zonas
+                .sort((a, b) => a.ventas - b.ventas)
+                .slice(0, 10)
+                .forEach(z => {
+                    const estado = z.ventas === 0 ? "CRÍTICA" : "OK";
+                    const clase = z.ventas === 0 ? "critica" : "ok";
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${z.zona}</td>
+                            <td>${z.ventas}</td>
+                            <td>${z.nodos}</td>
+                            <td class="${clase}">${estado}</td>
+                        </tr>
+                    `;
+                });
         });
+}
 
-        // Gráfico de Torta
-        const ctxP = document.getElementById('chartPie').getContext('2d');
-        if(pChart) pChart.destroy();
-        pChart = new Chart(ctxP, {
-            type: 'doughnut',
-            data: {
-                labels: ['Con Venta', 'Sin Venta'],
-                datasets: [{
-                    data: [data.nodos_con_ventas, data.nodos_sin_ventas || 0],
-                    backgroundColor: ['#28a745', '#dc3545']
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-        });
-    }
+// Cargar una fecha por defecto (opcional)
+cambiarFecha("2026-01-15");
 </script>
+
 </body>
 </html>
-
-
-
